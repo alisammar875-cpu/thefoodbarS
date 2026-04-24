@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "510471626",
+    "project_id": "thefoodbar-d7ffd",
+    "storage_bucket": "thefoodbar-d7ffd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510471626:android:8404001430a9d2069df333",
+        "android_client_info": {
+          "package_name": "com.example.foodbar_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvv37CAYc74RkzHaDoANo7Zyf3UZMKHuE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
