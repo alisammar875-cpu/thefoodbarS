@@ -9,11 +9,21 @@ export default function FloatingCart() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
   // Hide on cart, checkout, and admin pages
   const hiddenPaths = ['/cart', '/checkout', '/order-success'];
   const isAdmin = location.pathname.startsWith('/admin');
-  
-  if (hiddenPaths.includes(location.pathname) || isAdmin || cartCount === 0) return null;
+
+  React.useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsModalOpen(document.body.style.overflow === 'hidden');
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['style'] });
+    return () => observer.disconnect();
+  }, []);
+
+  if (hiddenPaths.includes(location.pathname) || isAdmin || cartCount === 0 || isModalOpen) return null;
 
   return (
     <AnimatePresence>
