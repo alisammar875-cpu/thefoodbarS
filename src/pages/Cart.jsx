@@ -5,8 +5,39 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Minus, Plus, Trash2, ArrowRight, ArrowLeft, ShoppingBag, Coins, ShieldCheck } from 'lucide-react';
 
 export default function Cart() {
-  const { cartItems, updateQuantity, removeItem, cartSubtotal, deliveryFee, cartTotal, cartCount } = useCart();
+  const { cartItems, updateQuantity, removeItem, cartSubtotal, deliveryFee, cartTotal, cartCount, addToCart } = useCart();
   const navigate = useNavigate();
+  const [recommendations, setRecommendations] = React.useState([]);
+
+  // AI-Style Recommendation Logic
+  React.useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const itemsRef = collection(db, 'menu_items');
+        const q = query(itemsRef, limit(20));
+        const snap = await getDocs(q);
+        const allItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        
+        // Filter out items already in cart
+        const cartIds = new Set(cartItems.map(i => i.id));
+        const available = allItems.filter(i => !cartIds.has(i.id));
+
+        // Smart logic: if cart has main items (Burgers/Pizza), prioritize Drinks/Sides
+        const hasMain = cartItems.some(i => ['Burgers', 'Pizza', 'Wraps'].includes(i.category));
+        
+        const recs = available
+          .sort(() => Math.random() - 0.5)
+          .filter(i => {
+            if (hasMain) return i.category === 'Drinks' || i.category === 'Fries & Sides';
+            return true;
+          })
+          .slice(0, 3);
+        
+        setRecommendations(recs);
+      } catch (e) { console.error(e); }
+    };
+    if (cartItems.length > 0) fetchRecommendations();
+  }, [cartItems]);
 
   if (cartItems.length === 0) {
     return (
@@ -55,53 +86,77 @@ export default function Cart() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, x: -100 }}
-                className="glass-card p-6 flex flex-col sm:flex-row gap-6 items-center group hover:border-primary/20 transition-all border-white/5"
+                className="glass-card p-4 flex flex-row gap-4 items-center group hover:border-primary/20 transition-all border-white/5"
               >
-                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-black/50 shrink-0 border border-white/10">
+                <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/50 shrink-0 border border-white/10">
                   <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
                 </div>
                 
-                <div className="flex-1 min-w-0 text-center sm:text-left">
-                  <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-2">
-                    <div>
-                      <h4 className="font-bold text-lg uppercase tracking-tight text-white mb-1">{item.name}</h4>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-sm uppercase tracking-tight text-white truncate">{item.name}</h4>
                       {item.specialInstructions && (
-                        <p className="text-xs text-text-muted italic opacity-60">Note: {item.specialInstructions}</p>
+                        <p className="text-[10px] text-text-muted italic opacity-60 truncate">Note: {item.specialInstructions}</p>
                       )}
                     </div>
                     <button 
                       onClick={() => removeItem(item.id, item.specialInstructions)} 
-                      className="text-text-muted hover:text-primary transition-all p-2 hover:bg-primary/10 rounded-xl sm:-mt-2"
+                      className="text-text-muted hover:text-primary transition-all p-1.5 hover:bg-primary/10 rounded-lg"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                   
-                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-6 mt-6">
-                    <div className="flex items-center gap-6 bg-black/40 rounded-xl px-4 py-2 border border-white/5">
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center gap-4 bg-black/40 rounded-lg px-2 py-1 border border-white/5">
                       <button onClick={() => updateQuantity(item.id, item.quantity - 1, item.specialInstructions)} className="text-text-muted hover:text-white transition-colors">
-                        <Minus className="w-4 h-4" />
+                        <Minus className="w-3 h-3" />
                       </button>
-                      <span className="text-lg font-display w-6 text-center">{item.quantity}</span>
+                      <span className="text-sm font-display w-4 text-center">{item.quantity}</span>
                       <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.specialInstructions)} className="text-text-muted hover:text-white transition-colors">
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-3 h-3" />
                       </button>
                     </div>
                     
-                    <div className="text-text-muted font-bold text-xs uppercase tracking-widest">
-                      <span className="text-white">Rs. {item.price}</span> / item
-                    </div>
-
-                    <div className="ml-auto sm:block hidden">
-                      <span className="font-display text-2xl text-white">Rs. {item.price * item.quantity}</span>
-                    </div>
+                    <span className="font-display text-lg text-white">Rs. {item.price * item.quantity}</span>
                   </div>
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
 
-          <Link to="/menu" className="inline-flex items-center gap-3 text-text-muted hover:text-primary transition-all text-sm font-bold uppercase tracking-[0.2em] group mt-8">
+          </AnimatePresence>
+
+          {/* Recommendations - AI Cross-sell */}
+          {recommendations.length > 0 && (
+            <div className="mt-12">
+              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-6 flex items-center gap-3">
+                <span className="w-8 h-px bg-primary/30" /> Pairs Well With
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {recommendations.map(rec => (
+                  <div key={rec.id} className="glass-card p-3 flex gap-4 items-center group">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 border border-white/5">
+                      <img src={rec.imageUrl} alt={rec.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h5 className="text-[10px] font-bold text-white uppercase truncate">{rec.name}</h5>
+                      <p className="text-[10px] text-primary font-bold mt-0.5">Rs. {rec.price}</p>
+                    </div>
+                    <button 
+                      onClick={() => addToCart(rec)}
+                      className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <Link to="/menu" className="inline-flex items-center gap-3 text-text-muted hover:text-primary transition-all text-[10px] font-bold uppercase tracking-[0.2em] group mt-12">
             <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary transition-all">
               <ArrowLeft className="w-4 h-4" />
             </div>

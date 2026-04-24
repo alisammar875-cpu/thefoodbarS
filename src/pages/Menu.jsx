@@ -177,67 +177,60 @@ export default function Menu() {
       {/* Item Detail Modal */}
       {selectedItem && (
         <Modal isOpen={!!selectedItem} onClose={() => { setSelectedItem(null); setItemQty(1); }}>
-          <div className="max-w-2xl mx-auto">
-            <div className="h-72 sm:h-96 w-full relative">
-              <img src={selectedItem.imageUrl} alt={selectedItem.name} className="w-full h-full object-cover rounded-t-3xl shadow-2xl" loading="lazy" />
+          <div className="max-w-xl mx-auto overflow-hidden rounded-[2.5rem]">
+            <div className="h-56 sm:h-64 w-full relative">
+              <img src={selectedItem.imageUrl} alt={selectedItem.name} className="w-full h-full object-cover shadow-2xl" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent" />
-              <div className="absolute top-6 left-6 flex gap-3">
-                {selectedItem.isFeatured && <span className="bg-primary text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">Featured</span>}
-                {selectedItem.isNew && <span className="bg-blue-500 text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">New</span>}
+              <div className="absolute top-4 left-4 flex gap-2">
+                {selectedItem.isFeatured && <span className="bg-primary text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-xl">Featured</span>}
+                {selectedItem.isNew && <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-xl">New</span>}
               </div>
             </div>
-            <div className="p-8 md:p-12 -mt-16 relative z-10 bg-[#080808] rounded-t-3xl border-t border-white/5">
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
+            <div className="p-6 md:p-8 -mt-10 relative z-10 bg-[#080808] rounded-t-3xl border-t border-white/5">
+              <div className="flex justify-between items-start gap-4 mb-4">
                 <div>
-                  <span className="bg-primary/10 text-primary text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-[0.2em]">{selectedItem.category}</span>
-                  <h2 className="text-4xl md:text-5xl font-display mt-4 tracking-tight uppercase leading-none">{selectedItem.name}</h2>
+                  <span className="bg-primary/10 text-primary text-[8px] font-bold px-3 py-1 rounded-full uppercase tracking-[0.2em]">{selectedItem.category}</span>
+                  <h2 className="text-3xl font-display mt-2 tracking-tight uppercase leading-none">{selectedItem.name}</h2>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="text-4xl font-display text-primary tracking-tighter">Rs. {selectedItem.price}</span>
-                  {selectedItem.originalPrice && (
-                    <span className="text-base text-text-muted line-through">Rs. {selectedItem.originalPrice}</span>
-                  )}
+                  <span className="text-2xl font-display text-primary tracking-tighter">Rs. {selectedItem.price}</span>
                 </div>
               </div>
-
-              <p className="text-text-muted text-lg leading-relaxed mb-10 font-medium">{selectedItem.description || selectedItem.shortDescription}</p>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-12">
-                <div className="bg-white/[0.02] p-5 rounded-3xl border border-white/5 flex flex-col items-center">
-                  <Clock className="w-5 h-5 text-primary mb-2" />
-                  <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mb-1">Prep Time</p>
-                  <p className="text-sm font-bold">{selectedItem.prepTimeMinutes || 15} Min</p>
+  
+              <p className="text-text-muted text-[11px] leading-relaxed mb-6 font-medium line-clamp-3">{selectedItem.description || selectedItem.shortDescription}</p>
+  
+              <div className="grid grid-cols-3 gap-3 mb-8">
+                <div className="bg-white/[0.02] p-3 rounded-2xl border border-white/5 flex flex-col items-center">
+                  <Clock className="w-4 h-4 text-primary mb-1" />
+                  <p className="text-[8px] text-text-muted font-bold uppercase tracking-widest mb-0.5">Prep</p>
+                  <p className="text-[10px] font-bold">{selectedItem.prepTimeMinutes || 15}m</p>
                 </div>
-                <div className="bg-white/[0.02] p-5 rounded-3xl border border-white/5 flex flex-col items-center">
-                  <Utensils className="w-5 h-5 text-primary mb-2" />
-                  <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mb-1">Calories</p>
-                  <p className="text-sm font-bold">{selectedItem.calories || 'N/A'} Cal</p>
+                <div className="bg-white/[0.02] p-3 rounded-2xl border border-white/5 flex flex-col items-center">
+                  <Utensils className="w-4 h-4 text-primary mb-1" />
+                  <p className="text-[8px] text-text-muted font-bold uppercase tracking-widest mb-0.5">Cals</p>
+                  <p className="text-[10px] font-bold">{selectedItem.calories || 'N/A'}</p>
                 </div>
-                <div className="bg-white/[0.02] p-5 rounded-3xl border border-white/5 flex flex-col items-center col-span-2 sm:col-span-1">
-                  <Star className="w-5 h-5 text-secondary mb-2 fill-current" />
-                  <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mb-1">Rating</p>
-                  <p className="text-sm font-bold">{selectedItem.averageRating?.toFixed(1) || '4.8'}/5</p>
+                <div className="bg-white/[0.02] p-3 rounded-2xl border border-white/5 flex flex-col items-center">
+                  <Star className="w-4 h-4 text-secondary mb-1 fill-current" />
+                  <p className="text-[8px] text-text-muted font-bold uppercase tracking-widest mb-1">Rate</p>
+                  <p className="text-[10px] font-bold">{selectedItem.averageRating?.toFixed(1) || '4.8'}</p>
                 </div>
               </div>
-
-              <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
-                <div className="flex items-center gap-8 bg-white/5 rounded-2xl px-8 py-5 border border-white/10 w-full sm:w-auto justify-between sm:justify-start">
-                  <button onClick={() => setItemQty(Math.max(1, itemQty - 1))} className="text-text-muted hover:text-white transition-colors p-1"><Minus className="w-5 h-5" /></button>
-                  <span className="w-8 text-center font-display text-3xl">{itemQty}</span>
-                  <button onClick={() => setItemQty(itemQty + 1)} className="text-text-muted hover:text-white transition-colors p-1"><Plus className="w-5 h-5" /></button>
+  
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 bg-white/5 rounded-xl px-4 py-3 border border-white/10">
+                  <button onClick={() => setItemQty(Math.max(1, itemQty - 1))} className="text-text-muted hover:text-white transition-colors"><Minus className="w-4 h-4" /></button>
+                  <span className="w-6 text-center font-display text-xl">{itemQty}</span>
+                  <button onClick={() => setItemQty(itemQty + 1)} className="text-text-muted hover:text-white transition-colors"><Plus className="w-4 h-4" /></button>
                 </div>
                 
                 <motion.button
                   whileTap={(selectedItem.isAvailable && config.isAcceptingOrders) ? { scale: 0.98 } : {}}
                   onClick={handleAddToCart}
                   disabled={!selectedItem.isAvailable || !config.isAcceptingOrders}
-                  className="flex-1 w-full py-5 bg-primary text-white rounded-2xl font-bold tracking-[0.2em] uppercase text-sm shadow-2xl shadow-primary/30 hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-3"
+                  className="flex-1 py-4 bg-primary text-white rounded-xl font-bold tracking-[0.2em] uppercase text-xs shadow-2xl shadow-primary/30 hover:opacity-90 transition-all disabled:opacity-20 flex items-center justify-center gap-2"
                 >
-                  {!config.isAcceptingOrders ? (
-                    'Store Closed'
-                  ) : selectedItem.isAvailable ? (
-                    <><ShoppingBag className="w-5 h-5" /> Add to Cart — Rs. {selectedItem.price * itemQty}</>
-                  ) : 'Out of Stock'}
+                  {!config.isAcceptingOrders ? 'Closed' : selectedItem.isAvailable ? <><ShoppingBag className="w-4 h-4" /> Add — Rs. {selectedItem.price * itemQty}</> : 'Sold Out'}
                 </motion.button>
               </div>
             </div>
