@@ -15,60 +15,47 @@ export default function FloatingCart() {
   
   if (hiddenPaths.includes(location.pathname) || isAdmin || cartCount === 0) return null;
 
-  const [dragProgress, setDragProgress] = React.useState(0);
-
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        className="lg:hidden fixed bottom-28 left-1/2 -translate-x-1/2 z-[100] w-[280px]"
+        initial={{ y: 100, opacity: 0, scale: 0.9 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 100, opacity: 0, scale: 0.9 }}
+        className="lg:hidden fixed bottom-28 left-1/2 -translate-x-1/2 z-[100] w-auto whitespace-nowrap"
       >
-        <div className="relative h-16 bg-[#0a0a0a]/90 backdrop-blur-2xl rounded-full border border-white/10 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)] flex items-center p-1.5 overflow-hidden">
-          {/* Animated Background Text */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <motion.p 
-              animate={{ opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 ml-10"
-            >
-              Slide to View Cart
-            </motion.p>
-          </div>
-
-          {/* Draggable Handle */}
-          <motion.div
-            drag="x"
-            dragConstraints={{ left: 0, right: 200 }}
-            dragElastic={0.1}
-            onDrag={(e, info) => setDragProgress(info.point.x)}
-            onDragEnd={(e, info) => {
-              if (info.offset.x > 150) {
-                navigate('/cart');
-              }
-            }}
-            className="relative z-20 w-[52px] h-[52px] bg-primary rounded-full flex items-center justify-center shadow-xl cursor-grab active:cursor-grabbing border-2 border-white/20"
-          >
-            <div className="relative">
-              <ShoppingBag className="w-6 h-6 text-white" strokeWidth={2.5} />
-              <span className="absolute -top-2 -right-2 bg-white text-primary text-[9px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-lg border border-primary">
-                {cartCount}
-              </span>
+        <div 
+          onClick={() => navigate('/cart')}
+          className="flex items-center bg-[#080808]/95 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-2 pl-7 gap-8 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.8)] cursor-pointer group hover:border-primary/30 transition-all active:scale-95"
+        >
+          {/* Order Info Section */}
+          <div className="flex flex-col">
+            <span className="text-[9px] text-primary font-black uppercase tracking-[0.2em] mb-0.5">Your Order</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-[10px] font-bold text-text-muted">Rs.</span>
+              <span className="text-xl font-display text-white tracking-tight">{cartTotal.toLocaleString()}</span>
             </div>
-          </motion.div>
-
-          {/* Price Display */}
-          <div className="flex-1 text-right pr-6 z-10">
-            <p className="text-[9px] font-black text-primary uppercase tracking-widest leading-none mb-1">Total Pay</p>
-            <p className="text-lg font-display text-white leading-none tracking-tight">Rs. {cartTotal.toLocaleString()}</p>
           </div>
 
-          {/* Progress Overlay */}
-          <motion.div 
-            className="absolute left-0 top-0 bottom-0 bg-primary/10 pointer-events-none"
-            style={{ width: dragProgress + 60 }}
-          />
+          {/* Action Button Section */}
+          <div className="relative">
+            <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(255,102,0,0.3)] group-hover:shadow-[0_0_40px_rgba(255,102,0,0.5)] transition-all">
+              <div className="relative">
+                <ShoppingBag className="w-6 h-6 text-white" strokeWidth={2.5} />
+                {/* Count Badge */}
+                <motion.span 
+                  key={cartCount}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-3 -right-3 bg-white text-primary text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center shadow-xl border-2 border-primary"
+                >
+                  {cartCount}
+                </motion.span>
+              </div>
+            </div>
+            
+            {/* Pulsing Outer Ring */}
+            <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-40 -z-10" />
+          </div>
         </div>
       </motion.div>
     </AnimatePresence>
