@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Minus, Plus, Trash2, ArrowRight, ArrowLeft, ShoppingBag, Coins, ShieldCheck } from 'lucide-react';
+import { collection, query, getDocs, limit } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default function Cart() {
   const { cartItems, updateQuantity, removeItem, cartSubtotal, deliveryFee, cartTotal, cartCount, addToCart } = useCart();
@@ -125,9 +127,7 @@ export default function Cart() {
               </motion.div>
             ))}
           </AnimatePresence>
-        </div>
-
-        {/* Recommendations - AI Cross-sell */}
+          {/* Recommendations - AI Cross-sell */}
           {recommendations.length > 0 && (
             <div className="mt-12">
               <h4 className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-6 flex items-center gap-3">
