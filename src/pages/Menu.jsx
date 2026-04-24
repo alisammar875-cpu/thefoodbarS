@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../contexts/CartContext';
 import { useToast } from '../contexts/ToastContext';
 import { useConfig } from '../contexts/ConfigContext';
+import { getOptimizedImageUrl } from '../utils/imageOptimizer';
 import logo from '../assets/logo.png';
 
 export default function Menu() {
@@ -179,7 +180,7 @@ export default function Menu() {
         <Modal isOpen={!!selectedItem} onClose={() => { setSelectedItem(null); setItemQty(1); }}>
           <div className="max-w-xl mx-auto overflow-hidden rounded-[2.5rem]">
             <div className="h-56 sm:h-64 w-full relative">
-              <img src={selectedItem.imageUrl} alt={selectedItem.name} className="w-full h-full object-cover shadow-2xl" loading="lazy" />
+              <img src={getOptimizedImageUrl(selectedItem.imageUrl, 800, 80)} alt={selectedItem.name} className="w-full h-full object-cover shadow-2xl" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent" />
               <div className="absolute top-4 left-4 flex gap-2">
                 {selectedItem.isFeatured && <span className="bg-primary text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-xl">Featured</span>}

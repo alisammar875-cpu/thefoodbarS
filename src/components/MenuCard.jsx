@@ -4,6 +4,7 @@ import { Plus, Eye, Star, Clock } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useToast } from '../contexts/ToastContext';
 import { useConfig } from '../contexts/ConfigContext';
+import { getOptimizedImageUrl } from '../utils/imageOptimizer';
 
 export default function MenuCard({ item, onView }) {
   const { addItem } = useCart();
@@ -33,7 +34,7 @@ export default function MenuCard({ item, onView }) {
       <div className="relative h-48 sm:h-56 overflow-hidden bg-black/40">
         {!isImageLoaded && <div className="absolute inset-0 skeleton" />}
         <img
-          src={item.imageUrl}
+          src={getOptimizedImageUrl(item.imageUrl, 500, 75)}
           alt={item.name}
           onLoad={() => setIsImageLoaded(true)}
           loading="lazy"

@@ -14,6 +14,7 @@ import logo from '../assets/logo.png';
 import CountdownTimer from '../components/CountdownTimer';
 import SkeletonCard from '../components/SkeletonCard';
 import { ArrowRight, Star, Clock, Users, ShieldCheck, Minus, Plus, Utensils, Zap, Award, ShoppingBag, History, Coins } from 'lucide-react';
+import { getOptimizedImageUrl } from '../utils/imageOptimizer';
 
 // Count-up hook
 function useCountUp(target, duration = 2000, start) {
@@ -277,7 +278,7 @@ export default function Home() {
               <motion.img
                 animate={{ y: [-15, 15, -15], rotate: [-1, 1, -1] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=90"
+                src={getOptimizedImageUrl("https://images.unsplash.com/photo-1568901346375-23c9450c58cd", 800, 80)}
                 alt="Signature Burger"
                 className="w-full h-full object-contain drop-shadow-[0_40px_80px_rgba(255,58,31,0.4)]"
               />
@@ -523,7 +524,7 @@ export default function Home() {
         <Modal isOpen={!!selectedItem} onClose={() => { setSelectedItem(null); setItemQty(1); }}>
           <div className="max-w-xl mx-auto overflow-hidden rounded-[2.5rem]">
             <div className="h-56 sm:h-64 w-full relative">
-              <img src={selectedItem.imageUrl} alt={selectedItem.name} className="w-full h-full object-cover shadow-2xl" loading="lazy" />
+              <img src={getOptimizedImageUrl(selectedItem.imageUrl, 800, 80)} alt={selectedItem.name} className="w-full h-full object-cover shadow-2xl" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent" />
               <div className="absolute top-4 left-4 flex gap-2">
                 {selectedItem.isFeatured && <span className="bg-primary text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-xl">Featured</span>}
