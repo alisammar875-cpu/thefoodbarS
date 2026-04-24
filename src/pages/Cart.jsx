@@ -5,9 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Minus, Plus, Trash2, ArrowRight, ArrowLeft, ShoppingBag, Coins, ShieldCheck } from 'lucide-react';
 import { collection, query, getDocs, limit } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useToast } from '../contexts/ToastContext';
+import { getOptimizedImageUrl } from '../utils/imageOptimizer';
 
 export default function Cart() {
-  const { cartItems, updateQuantity, removeItem, cartSubtotal, deliveryFee, cartTotal, cartCount, addToCart } = useCart();
+  const { cartItems, updateQuantity, removeItem, cartSubtotal, deliveryFee, cartTotal, cartCount, addItem } = useCart();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [recommendations, setRecommendations] = React.useState([]);
 
@@ -16,26 +19,26 @@ export default function Cart() {
     const fetchRecommendations = async () => {
       try {
         const itemsRef = collection(db, 'menu_items');
-        const q = query(itemsRef, limit(20));
+        // Fetch more items to ensure we find matching categories
+        const q = query(itemsRef, limit(100)); 
         const snap = await getDocs(q);
         const allItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         
-        // Filter out items already in cart
         const cartIds = new Set(cartItems.map(i => i.id));
         const available = allItems.filter(i => !cartIds.has(i.id));
 
-        // Smart logic: if cart has main items (Burgers/Pizza), prioritize Drinks/Sides
         const hasMain = cartItems.some(i => ['Burgers', 'Pizza', 'Wraps'].includes(i.category));
         
-        const recs = available
-          .sort(() => Math.random() - 0.5)
+        let recs = available
           .filter(i => {
             if (hasMain) return i.category === 'Drinks' || i.category === 'Fries & Sides';
             return true;
-          })
-          .slice(0, 3);
-        
-        setRecommendations(recs);
+          });
+
+        // Fallback: if no specific matches, just show random available items
+        if (recs.length === 0) recs = available;
+
+        setRecommendations(recs.sort(() => Math.random() - 0.5).slice(0, 3));
       } catch (e) { console.error(e); }
     };
     if (cartItems.length > 0) fetchRecommendations();
@@ -137,14 +140,17 @@ export default function Cart() {
                 {recommendations.map(rec => (
                   <div key={rec.id} className="glass-card p-3 flex gap-4 items-center group">
                     <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 border border-white/5">
-                      <img src={rec.imageUrl} alt={rec.name} className="w-full h-full object-cover" />
+                      <img src={getOptimizedImageUrl(rec.imageUrl, 100, 70)} alt={rec.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h5 className="text-[10px] font-bold text-white uppercase truncate">{rec.name}</h5>
                       <p className="text-[10px] text-primary font-bold mt-0.5">Rs. {rec.price}</p>
                     </div>
                     <button 
-                      onClick={() => addToCart(rec)}
+                      onClick={() => {
+                        addItem(rec);
+                        addToast(`${rec.name} added!`, 'success');
+                      }}
                       className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all"
                     >
                       <Plus className="w-4 h-4" />
