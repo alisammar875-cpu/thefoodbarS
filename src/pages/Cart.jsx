@@ -125,10 +125,9 @@ export default function Cart() {
               </motion.div>
             ))}
           </AnimatePresence>
+        </div>
 
-          </AnimatePresence>
-
-          {/* Recommendations - AI Cross-sell */}
+        {/* Recommendations - AI Cross-sell */}
           {recommendations.length > 0 && (
             <div className="mt-12">
               <h4 className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-6 flex items-center gap-3">
